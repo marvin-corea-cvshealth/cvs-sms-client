@@ -1,0 +1,379 @@
+accelerator:
+  displayName: CVS SMS Client
+  description: CVS SMS Client
+  iconUrl: https://raw.githubusercontent.com/dektlong/dekt-images/80bfdbf23040731d16310e286e7d40b57e3b23d5/tanzu.png
+  tags:
+  - devsecops
+  - sms
+
+  options:
+  
+  #supplychain selection
+   # - name: supplychain
+   #   inputType: select
+   #   label: Supply chain 
+   #   description: Generated configuration for the DevOps supply chain
+   #   required: true
+      #defaultValue: tap
+   #   choices:
+   #     - value: k8s
+   #       text: k8s + Skaffold
+   #     - value: tbs
+   #       text: Build Service + CRDs
+   #     - value: cf
+   #       text: Tanzu Application Service manifest
+   #     - value: tap
+   #       text: Tanzu Application Platform supply-chain
+ 
+ # workload type
+    - name: workloadType
+      label: Workload type
+      description: Select the workload type for this supply chain
+      inputType: select
+      defaultValue: web
+    #  dependsOn:
+     #   name: supplychain
+      #  value: tap
+      choices:
+       - value: web
+         text: Web frontend
+       - value: web-backend
+         text: Web backend 
+       - value: event-topic
+         text: Event topic
+    
+ #add TBS configs
+    - name: addTBS
+      label: Add Build Service standalone configs
+      description: Add config examples for using TBS without a TAP suppply chain
+      inputType: checkbox 
+      defaultValue: false
+      display: true
+      dataType: boolean
+
+#workloads repos
+    #- name: gitRepos
+    #  label: Workloads FQDN repos 
+    #  description: A seprate git repo for every workload in this supply chain type
+    #  inputType: multi-text
+    #  required: false
+    #  dataType: [string]
+    #  defaultValue:
+    #    - https://github.com/dektlong/workload1
+
+#scanning
+    - name: scanScope
+      label: Scanning scope
+      description: Select the scope of your scanning
+      inputType: select
+      defaultValue: src
+      #dependsOn:
+      #  name: supplychain
+      #  value: tap
+      choices:
+       - value: src
+         text: Source only
+       - value: srcImg
+         text: Source and image
+               
+#data services binding
+    - name: serviceBinding
+      label: Service binding scope
+      description: Select which type of data services to bind to
+      inputType: checkbox
+      dataType: [string]
+      defaultValue:
+        - k8sPostgresSQL
+        - k8sRabbitMQ
+      #dependsOn:
+      #  name: addTesting
+      #  value: true
+      choices:
+        - value: rdsPostgres
+          text: RDS PostgresSQL
+        - value: azureSQL
+          text: Azure SQL
+        - value: gcpSQL
+          text: Google Cloud SQL
+        - value: k8sRabbitMQ
+          text: On-cluster RabbitMQ
+        - value: k8sPostgresSQL
+          text: On-cluster PostgresSQL
+        - value: vmPostgresSQL
+          text: PostgresSQL on a dedicated VM
+
+#intgration testing
+    #- name: addTesting
+    #  label: Add integration testing
+    #  description: Add a pipeline to run pre-prod testing (the pipeline tool was pre-configured for you by the central ops team)
+    #  inputType: checkbox 
+    #  defaultValue: false
+    #  dataType: boolean
+      #dependsOn:
+      #  name: supplychain
+      #  value: tap
+    - name: testScope
+      label: Integration testing scope
+      description: Select scope of testing in your pipeline
+      inputType: checkbox
+      dataType: [string]
+      defaultValue:
+        - core
+      #dependsOn:
+      #  name: addTesting
+      #  value: true
+      choices:
+        - value: core
+          text: Core functionality
+        - value: data
+          text: Data integrations
+        - value: api
+          text: External APIs
+   
+#API-grid configs
+   
+   #- name: addAPIGrid
+    #  label: Add API-grid 
+    #  description: Setup custom configurations for API Gateway, Portal and access control
+    #  inputType: toggle 
+    #  defaultValue: false
+    #  display: true
+    #  dataType: boolean
+
+   # - name: apiAccess
+   #   label: API access level
+   #   description: The scope the API access this supplychain enables
+   #   inputType: select
+   #   dataType: string
+   #   defaultValue: dev
+     # dependsOn:
+     #   name: addAPIGrid
+     #   value: true
+    #  choices:
+    #    - value: dev
+    #      text: "Dev gateways in project's domain (team collaboration)"
+    #    - value: brownfield
+    #      text: "3rd-party & legacy sytems approved for this project"
+    #    - value: public
+    #      text: "Publicly accessible APIs "
+#    - name: openAPISources
+ #     label: Open api source urls
+  #    inputType: multi-text
+   #   dataType: [string]
+    #  dependsOn:
+     #   name: apiAccess
+      #  value: 
+    #      - brownfield
+    #      - public
+    #  defaultValue:
+    #    - scg-openapi.apps.dekt.io/openapi
+    - name: gwSLA
+      label: API boundaries / domains 
+      description: Define micro-GW HA, global filters and API access scope
+      inputType: select
+      dataType: string
+      defaultValue: localdev
+     # dependsOn:
+     #   name: addAPIGrid
+     #   value: true
+      choices:
+        - value: localdev
+          text: "Local development (1 GW, local access only)"
+        - value: teamdev
+          text: "Team developemnt (2 GWs, team access)"
+        - value: integration
+          text: "Integration (3 GWs, brownfiled access, global rate-limits)"
+        - value: production
+          text: "Production (4 GWs, brownfield access, global rate-limits and SSO)"
+        - value: external
+          text: "Public (2 GWs, external access, global rate-limits, SSO and Key Management)"
+   # - name: forceRateLimit
+   #   label: Rate-limits for all routes
+   #   inputType: checkbox 
+   #   defaultValue: false
+   #   dataType: boolean
+      #dependsOn:
+      #  name: apiAccess
+      #  value: 
+      #    - brownfield
+   # - name: forceSSO
+   #   label: SSO for all routes
+   #   inputType: checkbox 
+   #   defaultValue: false
+   #   dataType: boolean
+   #   dependsOn:
+   #     name: portalScope
+   #     value: 
+   #       - brownfield
+   #       - public
+
+   # - name: ssoProvider
+   #   label: Identity provider for API SSO
+   #   description: SSO identity provider
+   #   inputType: select 
+   #   defaultValue: workspaceOne
+      #dependsOn:
+      #  name: addAPIGrid
+      #  value: true
+    #  choices:
+     #   - value: amazon
+     #     text: Amazon
+     #   - value: google
+     #     text: Google
+     #   - value: okta
+     #     text: Okta (Auth0)
+     #   - value: microsoft
+     #     text: Microsoft
+     #   - value: workspaceOne
+     #     text: Workspace ONE
+    #- name: gwHA
+    #  label: Deploy HA micro-gateway
+    #  description:  Micro-gateways requires HA deployment 
+    #  inputType: checkbox
+    #  dataType: boolean
+      #dependsOn:
+      #  name: addAPIGrid
+      #  value: true
+    #  defaultValue: false
+    
+#metrics integrations
+    
+    - name: addObservability
+      label: Add Platform Observabilty   
+      description: Add observability to platoform components
+      inputType: checkbox 
+      defaultValue: false
+      display: true
+      dataType: boolean
+      
+    - name: scopeTO
+      label: Scope of integration with Tanzu Observabilty
+      description: Select scope of integration with with Tanzu Observabilty (will inject TO proxy into clusters)
+      inputType: checkbox
+      dataType: [string]
+      defaultValue:
+        - core
+      dependsOn:
+        name: addObservability
+        value: true
+      choices:
+        - value: core
+          text: Core k8s components
+        - value: gw
+          text: API Micro-gateways
+        - value: jvm
+          text: Java runtimes
+    - name: gwMetrics
+      label: Add Prometheus integration to API Gateway
+      description: Add Prometheus integration to API Gateway
+      inputType: checkbox
+      dataType: boolean
+      dependsOn:
+        name: addObservability
+        value: true
+      defaultValue: false
+    #- name: vaultIntegration
+    #  label: API key management with Vault
+    #  inputType: checkbox 
+    #  defaultValue: false
+    #  dataType: boolean
+      #dependsOn:
+      #  name: addAPIGrid
+      #  value: true
+    #- name: apiScorecards
+    #  description: URL for API Scorecards dashboard
+    #  defaultValue: https://vmware.wavefront.com/u/xNrc03cJ7L?t=vmware
+    #  dependsOn:
+    #    name: gwMetrics
+    #    value: true
+    #- name: wavefront
+    #  label: Tanzu observability
+    #  description:  Add Tanzu observability configuration to gateway
+    #  inputType: checkbox
+    #  dataType: boolean
+    #  defaultValue: true
+    #  dependsOn:
+    #    name: gwMetrics
+    #    value: true
+    #- name: prometheus
+    #  label: Prometheus service monitor 
+    #  description:  Add Prometheus service monitor configuration to gateway
+    #  inputType: checkbox
+    #  dataType: boolean
+    #  defaultValue: false
+    #  dependsOn:
+    #    name: gwMetrics
+    #    value: true
+          
+ #hidden values
+    #- name: domain
+    #  label: Domain name
+    #  defaultValue: gw.dekt.io
+    #  display: false
+    #- name: registry
+    #  label: Image registry
+    #  defaultValue: harbor.apps.cf.tanzutime.com/dekt-apps
+    #  display: false
+    #- name: workloads
+    #  label: Workload names
+    #  display: false
+    #  inputType: multi-text
+    #  dataType: [string]
+     # defaultValue:
+     #   - backend
+     #   - frontend
+     #   - adopter-check
+
+engine:
+  merge:
+    #supplychain
+    - includes: [ "supplychain/tap/**" ]
+      #condition: "#supplychain == 'tap'"
+      chain:
+        - type: YTT
+    #- includes: [ "supplychain/k8s/**" ]
+    #  condition: "#supplychain == 'k8s'"
+    - includes: [ "supplychain/tbs-kpack/**" ]
+      condition: "#addTBS"
+      chain:
+        - type: ReplaceText
+          substitutions:
+            - text: app-name
+              with: "#artifactId"
+           # - text: git1
+           #   with: "#gitRepos[0]"
+           # - text: git2
+           #   with: "#gitRepos[1]"
+           # - text: git3
+           #   with: "#gitRepos[2]"
+           # - text: workload1
+           #   with: "#workloads[0]"
+           # - text: workload2
+           #   with: "#workloads[1]"
+           # - text: workload3
+           #   with: "#workloads[2]"
+           # - text: registry
+           #   with: "#registry"
+    #- includes: [ "supplychain/cf/**" ]
+    #  condition: "#supplychain == 'cf'"
+    #  chain:
+    #    - type: YTT
+    
+    #api-grid
+    - includes: [ "api-grid/k8s/**" ]
+      #condition: "#supplychain != 'cf'"
+      chain:
+        - type: YTT
+    #- includes: [ "api-grid/cf/*.yaml" ]
+    #  condition: "#supplychain == 'cf'"
+    #  chain:
+    #    - type: YTT
+    #- includes: [ "api-grid/cf/*.json" ]
+    #  condition: "#supplychain == 'cf'"
+    #  chain:
+    #    - type: ReplaceText
+    #      substitutions:
+    #        - text: app-name
+    #          with: "#artifactId"
+    #        - text: domain
+    #          with: "#domain"
